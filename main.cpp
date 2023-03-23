@@ -3,7 +3,6 @@
 #include <string>   //aktivasi string
 #include <ctime>    //input real time
 #include <sstream>  //input 
-#include <iomanip>
 #include "databuku.h" //untuk menyambungkan file databuku.h
 
 using namespace std;
@@ -20,9 +19,9 @@ string waktu = ctime(&detik);
 time_t now = time(0);
 tm*ltm= localtime(&now);
 
-int hari = ltm -> tm_mday;
 int bulan = 1 + ltm -> tm_mon;
 int tahun = 1900 + ltm -> tm_year;
+int tanggal;
 
 //variabel char int dan float 
 int menu, jawabpinjam, opsikelas, opsibuku, utama, menumapel, jawabpeminjaman, kategori,menulogin;
@@ -39,9 +38,10 @@ void bukupelajaran();
 void novel();
 void bukupengetahuan();
 void struk();
-void about();
 void login();
-void lainya();
+void login_struk();
+
+
 
 int main()
 {
@@ -61,6 +61,7 @@ int main()
     }
     else if (opsiakun == 2)
     {
+    system("cls");
     system("color 2"); //untuk mengganti warna teks
     cout << "=======================================" << endl;
     cout << "PERPUSTAKAAN SMKN 1 BOYOLANGU " << endl;
@@ -71,13 +72,21 @@ int main()
     cout << "masukkan jurusan       : "; cin >> jurusan;
     cout << "buat password          : "; cin >> password;
     cout << "=======================================" << endl;
+
+    ofstream reg("akun.txt");
+    reg << nama << ' ' << nama_belakang << ' ' << kelas << ' ' << jurusan << ' ' << password << endl;
+
     }
     else 
     {
         cout << "MAAF OPSI SALAH!!" << endl;
         goto inputlogin;
     }
+
+
     beranda();
+
+
     // sistem back
     cout << "apakah kamu ingin melakukan layanan ini lagi ?";
     cout << "(Y / T)" << endl;
@@ -111,20 +120,64 @@ int main()
     return 0;
 }
 
+void login()
+{
+    int count = 0;
+    string line;
+    string n,nb,c,j,pw;
+    string s,ps;
+    cout << "==================================" << endl;
+    cout << "              LOGIN               " << endl;
+    cout << "==================================" << endl;
+    cout << "masukkan nama depan : "; cin >> s;
+    cout << "masukkan password   : "; cin >> ps;
+    cout << "==================================" << endl;
+
+     fstream file("akun.txt");
+    while(getline(file, line))
+    {
+        stringstream ss(line);
+        ss >>  n >> nb >> c >> j >> pw;
+        if (n == s && ps == pw)
+        {
+            count = 1;
+            break;
+        }
+    }
+    file.close();
+
+    if(count == 1)
+    {
+        system("cls");
+        cout << "LOGIN BERHASIL!" << endl;
+        beranda();
+    }
+    else 
+    {
+       
+        cout << "LOGIN ERROR" << endl;
+        cout << "TOLONG MASUKKAN NAMA DAN USERNAME YANG BENAR" << endl;
+        system("pause");
+        system("cls");
+        login();
+    }
+
+}
+
+
 // BERANDA ATAU HALAMAN UTAMA
 void beranda()
 {
     system("cls");
-    awal:
     cout << "|=======================================|" << endl;
     cout << "|               PERPUSTAKAAN            |" << endl;
     cout << "|=======================================|" << endl;
-    cout << "|halo"<< nama <<"                       |" << endl;
+    cout << "|HALLO SELAMAT DATANG                   |" << endl;
     cout << "|ada yang bisa kami bantu?              |" << endl;
     cout << "|=======================================|" << endl;
     cout << "|apa yang ingin anda lakukan :          |" << endl;
     cout << "|1.peminjaman buku                      |" << endl;
-    cout << "|2.Login                                |" << endl;
+    cout << "|2.Struk peminjaman                     |" << endl;
     cout << "|0.Keluar                               |" << endl;
     cout << "|=======================================|" << endl;
     cout << "input menu : ";
@@ -136,7 +189,7 @@ void beranda()
     else if (menu == 2)
     {
         system("cls");
-        login();
+        login_struk();
     }
     else if (menu == 0)
     {
@@ -204,10 +257,6 @@ void tipebuku()
     {
         novel();
     }
-    else if(pilihbuku == 4)
-    {
-        lainya();
-    }
     else if (pilihbuku == 0)
     {
         beranda();
@@ -221,7 +270,6 @@ void tipebuku()
 // BERISI TENTANG BUKU PELAJARAN PER-ANGKATAN
 void bukupelajaran()
 {
-menupelajaran:
     system("cls");
     cout << "|====================================|" << endl;
     cout << "|          PILIH KELAS               |" << endl;
@@ -263,16 +311,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -282,7 +332,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -296,7 +346,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -317,16 +367,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -336,7 +388,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -350,7 +402,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -367,20 +419,22 @@ menupelajaran:
             {
                 cout << PKNA[i] << endl;
             }
-            cout << "===============================================================" << endl;
+           cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -390,7 +444,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -404,7 +458,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -444,16 +498,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -463,7 +519,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -477,7 +533,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -499,16 +555,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -518,7 +576,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -532,7 +590,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -554,16 +612,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023";
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -573,7 +633,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -587,7 +647,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -625,16 +685,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -644,7 +706,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -658,7 +720,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -679,16 +741,18 @@ menupelajaran:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -698,7 +762,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                goto menupelajaran;
+                bukupelajaran();
             }
             else
             {
@@ -712,7 +776,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    cout << "program akan kembali ke halaman awal!!" << endl;
+                    beranda();
                 }
                 else
                 {
@@ -729,20 +793,22 @@ menupelajaran:
             {
                 cout << PKNC[i] << endl;
             }
-           cout << "===============================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
             cout << "cetak struk (y/t) ? " << endl;
             cin >> jawab_struk;
@@ -752,7 +818,7 @@ menupelajaran:
             }
             else if (jawab_struk == 'T' || jawab_struk == 't')
             {
-                cout << "program akan menampilkan loncat ke halaman awal!" << endl;
+                beranda();
             }
             else
             {
@@ -766,7 +832,7 @@ menupelajaran:
                 }
                 else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
                 {
-                    goto menupelajaran;
+                    beranda();
                 }
                 else
                 {
@@ -788,7 +854,7 @@ menupelajaran:
         cin >> pertanyaan_pengulangan;
         if (pertanyaan_pengulangan == 'y' || pertanyaan_pengulangan == 'Y')
         {
-            goto menupelajaran;
+           bukupelajaran();
         }
         else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
         {
@@ -801,12 +867,12 @@ menupelajaran:
     }
 }
 
+//PROGRAM PEMINJMANAN BUKU PENGETAHUAN
 void bukupengetahuan()
 {
-menupengetahuan:
     system("cls");
         cout << "|====================================|" << endl;
-        cout << "|   pilih buku pelajaran kelas 11 :  |" << endl;
+        cout << "|        pilih buku pengetahuan      |" << endl;
         cout << "|====================================|" << endl;
         cout << "|1.buku python                       |" << endl;
         cout << "|2.buku c++                          |" << endl;
@@ -828,16 +894,18 @@ menupengetahuan:
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -847,7 +915,7 @@ menupengetahuan:
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menupengetahuan;
+            bukupengetahuan();
         }
         else
         {
@@ -861,7 +929,7 @@ menupengetahuan:
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+                beranda();  
             }
             else
             {
@@ -877,20 +945,22 @@ menupengetahuan:
         {
             cout << bukucpp[i] << endl;
         }
-        cout << "===============================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -900,7 +970,7 @@ menupengetahuan:
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menupengetahuan;
+            bukupengetahuan();
         }
         else
         {
@@ -914,7 +984,7 @@ menupengetahuan:
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+               beranda();
             }
             else
             {
@@ -931,20 +1001,22 @@ menupengetahuan:
         {
             cout << bukujava[i] << endl;
         }
-       cout << "===============================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -954,7 +1026,7 @@ menupengetahuan:
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menupengetahuan;
+            bukupengetahuan();
         }
         else
         {
@@ -968,7 +1040,7 @@ menupengetahuan:
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+                beranda();
             }
             else
             {
@@ -982,13 +1054,27 @@ menupengetahuan:
     }
     else
     {
-        cout << "maaf jawaban anda tidak ada!" << endl;
+        pertanyaan_bp:
+        cout << "MAAF MENU YANG ANDA PILIH TIDAK ADA!" << endl;
+        cout << "APAKAH INGIN MENGULANGI PROGRAM INI LAGI? (Y/T)? : ";
+        cin >> pertanyaan_pengulangan;
+        if (pertanyaan_pengulangan == 'y' || pertanyaan_pengulangan == 'Y')
+        {
+            bukupengetahuan();
+        }
+        else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
+        {
+            beranda();
+        }
+        else
+        {
+            goto pertanyaan_bp;
+        }
     }
 }
 
 void novel()
 {
-menunovel:
 system("cls");
     cout << "=======================================" << endl;
     cout << "                 NOVEL                 " << endl;
@@ -1010,20 +1096,22 @@ system("cls");
 
             cout << terjadinya_ngawi[i] << endl;
         }
-       cout << "===============================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -1033,7 +1121,7 @@ system("cls");
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menunovel;
+            novel();
         }
         else
         {
@@ -1047,7 +1135,7 @@ system("cls");
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+                beranda();
             }
             else
             {
@@ -1063,20 +1151,22 @@ system("cls");
         {
             cout << sang_rogersumatra[i] << endl;
         }
-       cout << "===============================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
             cout << "bulan                           : "; cin >> bulan_pengembalian;
-            cout << "tahun                           :  2023" << endl;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -1086,7 +1176,7 @@ system("cls");
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menunovel;
+             novel();
         }
         else
         {
@@ -1100,7 +1190,7 @@ system("cls");
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+                beranda();
             }
             else
             {
@@ -1116,20 +1206,22 @@ system("cls");
         {
             cout << dilan_1990[i] << endl;
         }
-        cout << "==================================================================" << endl;
+            cout << "===============================================================" << endl;
             cout << "nama peminjam : " << nama << endl;
             cout << "kelas         : " << kelas << endl;
             cout << "===============================================================" << endl;
-            cout << "tanggal pengambilan pada        : " << endl;
-            cout << "hari                            : " << hari << endl;
-            cout << "bulan                           : " << bulan << endl;
+            cout << "                     Tanggal pengambilan pada                  " << endl;
+            cout << "===============================================================" << endl;
+            cout << "tanggal                         : "; cin >> tanggal;
+            cout << "bulan                           : " << bulan << endl; 
             cout << "tahun                           : " << tahun << endl;
             cout << "diambil pada jam                : "; cin >> waktu_ambil;
             cout << "===============================================================" << endl;
-            cout << "Tanggal pengembalian            : " << endl;
+            cout << "                    Tanggal pengembalian pada                  " << endl;
+            cout << "===============================================================" << endl;
             cout << "tanggal                         : "; cin >> tanggal_pengembalian;
-            cout << "bulan                           : "; cin >> bulan_pengembalian;    
-            cout << "tahun                           :  2023" << endl;
+            cout << "bulan                           : "; cin >> bulan_pengembalian;
+            cout << "tahun                           : " << tahun << endl;
             cout << "===============================================================" << endl;
         cout << "cetak struk (y/t) ? " << endl;
         cin >> jawab_struk;
@@ -1139,7 +1231,7 @@ system("cls");
         }
         else if (jawab_struk == 'T' || jawab_struk == 't')
         {
-            goto menunovel;
+            novel();
         }
         else
         {
@@ -1153,7 +1245,7 @@ system("cls");
             }
             else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
             {
-                cout << "program akan kembali ke halaman awal!!" << endl;
+                beranda();
             }
             else
             {
@@ -1167,41 +1259,23 @@ system("cls");
     }
     else
     {
-        cout << "maaf jawaban anda tidak ada!" << endl;
-    }
-}
-
-//DIGUNAKAN UNTUK MELIHAT JENIS BUKU YANG ADA DI PERPUSTAKAAN 
-//CATATAN HANYA DAPAT MELIHAT TIDAK DAPAT MEMINJAM DI APP INI!! JIKA MEMINJAM HARUS DATANG KE PERPUSTAKAAN
-//program untuk menampilkan data buku
-void lainya()
-{
-    string judul, pengarang, tahun_terbit,jenis_buku;
-    int nomor_buku;
-    string line;
-    ifstream myfile("database_buku.txt");
-    
-    system("cls");
-    cout << "|====================================================================================================================|" << endl;
-    cout << "|       JUDUL        |       NAMA PENGARANG      |        TAHUN TERBIT      |       JENIS BUKU     |    NOMOR BUKU   |" << endl;
-    cout << "|====================================================================================================================|" << endl;
-    while (getline(myfile , line)) {
-         stringstream ss(line);
-        ss >> judul >> pengarang >> tahun_terbit >> jenis_buku >> nomor_buku;
-         cout << "|" << setw (20) << left <<judul 
-         << "|" << setw (27) << left << pengarang 
-         << "|" << setw (26) << left << tahun_terbit  
-         << "|" << setw (22) << left << jenis_buku 
-         << "|" << setw (17) << left << nomor_buku 
-         << "|" << endl;
+        pertanyaan_novel:
+        cout << "MAAF MENU YANG ANDA PILIH TIDAK ADA!" << endl;
+        cout << "APAKAH INGIN MENGULANGI PROGRAM INI LAGI? (Y/T)? : ";
+        cin >> pertanyaan_pengulangan;
+        if (pertanyaan_pengulangan == 'y' || pertanyaan_pengulangan == 'Y')
+        {
+            novel();
         }
-    cout << "|====================================================================================================================|" << endl;
-
-    myfile.close(); //berfungsi untuk menutup file
-
-    cout << "JIKA MENEKAN SEMUA TOMBOL MAKA PROGRAM AKAN KEMBALI KE HALAMAN AWAL!!" << endl;
-    system("pause");
-    beranda();
+        else if (pertanyaan_pengulangan == 't' || pertanyaan_pengulangan == 'T')
+        {
+            beranda();
+        }
+        else
+        {
+            goto pertanyaan_novel;
+        }
+    }
 }
 
 void struk() // digunakan untuk mencetak struk
@@ -1215,7 +1289,7 @@ void struk() // digunakan untuk mencetak struk
     cout << "| kelas                           : " << kelas << "-" << jurusan           << "|" << endl;
     cout << "|==============================================================================|" << endl;
     cout << "| judul buku                      :" << *pinjam_buku<< "|" << endl;
-    cout << "| pengambilan pada                : " << hari<<"-"<<bulan<<"-"<< tahun  << "|" << endl;
+    cout << "| pengambilan pada                : " << tanggal<<"-"<<bulan<<"-"<< tahun  << "|" << endl;
     cout << "| waktu pengambilan               : " << waktu_ambil << endl;
     cout << "|==============================================================================|" << endl;
     cout << "| pengembalian pada               : "<<tanggal_pengembalian<<"-"<<bulan_pengembalian<<"-"<<tahun<< "|" << endl;
@@ -1225,17 +1299,17 @@ void struk() // digunakan untuk mencetak struk
     cout << "| " << a                                                                   << "|" << endl;
     cout << "| =============================================================================|" << endl;
     ofstream reg("struk.txt",ios::app); //ios::app dapat menambahkan data tanpa menghapus data sebelumnya yang sudah ada
-    reg << a << ' ' << nama <<' '<< nama_belakang << ' '<< password << ' ' << kelas <<' '<< jurusan << ' ' << *pinjam_buku << ' ' << hari << ' ' <<
+    reg << a << ' ' << nama <<' '<< nama_belakang << ' '<< password << ' ' << kelas <<' '<< jurusan << ' ' << *pinjam_buku << ' ' << tanggal << ' ' <<
     bulan<< ' ' << ' ' << waktu_ambil << ' ' <<  tanggal_pengembalian << ' ' <<   bulan_pengembalian << ' ' << tahun << ' ' << endl;
     //program diatas menunjukkan data dari struk dimasukkan ke dalam "struk.txt". fungsi dari << ' ' << adalah untuk memberikan spasi dalam file "struk.txt"
 }
 
 //login untuk mencari struk dari buku yang anda pinjam.
-void login()
+void login_struk()
 {
     //variabel
     int count = 0; //
-    int ks,tgl,jb,wa,thn,verifn,tgla,blna;
+    int ks,tgl,wa,thn,verifn,tgla,blna;
     string n, ns,js, bln,pw,mp;
     string siswa,password_siswa;
     string line;
